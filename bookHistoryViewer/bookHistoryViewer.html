@@ -1,0 +1,40 @@
+<template>
+    <lightning-card>
+        <div class="custom-card-header">
+            Check Your Books
+        </div>
+        <div class="slds-p-around_medium">
+            <lightning-input
+                type="email"
+                label="Enter your email"
+                value={email}
+                onchange={handleEmailChange}>
+            </lightning-input>
+
+            <lightning-button
+                label="Check My Books"
+                onclick={handleCheckBooks}
+                class="slds-m-top_medium"
+                variant="brand">
+            </lightning-button>
+
+            <template if:true={requests}>
+                <template if:true={requests.length}>
+                    <div class="slds-m-top_medium">
+                        <template for:each={requests} for:item="req">
+                            <div key={req.Id} class="slds-box slds-m-bottom_small">
+                                <p><strong>Book:</strong> {req.BookTest__r.Name}</p>
+                                <p><strong>Status:</strong> {req.Status__c}</p>
+                                <p><strong>Date From:</strong> {req.Date_From__c}</p>
+                                <p><strong>Date To:</strong> {req.Date_To__c}</p>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+                <template if:false={requests.length}>
+                    <p class="slds-m-top_medium">No books found for this email.</p>
+                </template>
+            </template>
+        </div>
+    </lightning-card>
+</template>

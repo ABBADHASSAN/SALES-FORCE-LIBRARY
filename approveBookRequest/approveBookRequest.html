@@ -1,0 +1,76 @@
+<template>
+    <lightning-card title="Book Request Approvals" icon-name="custom:custom63">
+        <template if:true={loading}>
+            <div class="slds-p-around_medium">
+                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+            </div>
+        </template>
+
+        <template if:false={loading}>
+            <template if:true={hasRequests}>
+                <template for:each={requests} for:item="req">
+                    <div key={req.Id} class="slds-box slds-m-around_small slds-p-around_small">
+                        <p><strong>Book:</strong> {req.BookTest__r.Name}</p>
+                        <p><strong>Author:</strong> {req.BookTest__r.Author__c}</p>
+                        <p><strong>Category:</strong> {req.BookTest__r.Category__c}</p>
+                        <p><strong>Requested From:</strong> {req.Date_From__c}</p>
+                        <p><strong>Requested To:</strong> {req.Date_To__c}</p>
+                        <p><strong>Requested By:</strong> {req.Requested_By__c}</p>
+                        <p><strong>Status:</strong> {req.Status__c}</p>
+
+                        <template if:true={req.isSelected}>
+                            <lightning-combobox
+                                name="copies"
+                                label="Select Available Copy"
+                                value={selectedCopyId}
+                                options={availableCopyOptions}
+                                onchange={handleCopyChange}
+                                placeholder="Choose a book copy...">
+                            </lightning-combobox>
+
+                            <div class="slds-m-top_small">
+                                <lightning-button
+                                    label="Approve"
+                                    variant="brand"
+                                    onclick={approveRequest}
+                                    disabled={isApproveDisabled}>
+                                </lightning-button>
+
+                                <lightning-button
+                                    label="Cancel"
+                                    variant="neutral"
+                                    onclick={cancelSelection}
+                                    class="slds-m-left_small">
+                                </lightning-button>
+                            </div>
+                        </template>
+
+                        <template if:false={req.isSelected}>
+                            <div class="slds-m-top_small">
+                                <lightning-button
+                                    label="Approve"
+                                    variant="brand"
+                                    data-id={req.Id}
+                                    data-book-id={req.BookTest__c}
+                                    onclick={selectRequest}>
+                                </lightning-button>
+
+                                <lightning-button
+                                    label="Reject"
+                                    variant="destructive"
+                                    data-id={req.Id}
+                                    onclick={rejectRequest}
+                                    class="slds-m-left_small">
+                                </lightning-button>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </template>
+
+            <template if:false={hasRequests}>
+                <p class="slds-p-around_medium">No pending requests to show.</p>
+            </template>
+        </template>
+    </lightning-card>
+</template>

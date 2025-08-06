@@ -1,0 +1,43 @@
+<template>
+    <lightning-card title="Request a Book">
+        <div class="slds-p-around_medium">
+
+            <lightning-combobox
+                name="book"
+                label="Select Book"
+                value={selectedBook}
+                options={bookOptions}
+                onchange={handleBookChange}>
+            </lightning-combobox>
+
+            <lightning-input
+                type="email"
+                label="Email"
+                value={email}
+                onchange={handleEmailChange}>
+            </lightning-input>
+
+            <lightning-input
+                type="date"
+                label="Date From"
+                value={dateFrom}
+                onchange={handleDateFromChange}>
+            </lightning-input>
+
+            <lightning-input
+                type="date"
+                label="Date To"
+                value={dateTo}
+                onchange={handleDateToChange}>
+            </lightning-input>
+
+            <lightning-button
+                label="Submit Request"
+                onclick={handleSubmit}
+                variant="brand"
+                class="slds-m-top_medium">
+            </lightning-button>
+        </div>
+    </lightning-card>
+</template>
+
