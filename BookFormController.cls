@@ -1,30 +1,83 @@
 public with sharing class BookFormController {
+    
     @AuraEnabled(cacheable=true)
     public static List<BookTest__c> getBooks() {
         return [SELECT Id, Name FROM BookTest__c];
     }
-
+    
     @AuraEnabled
-    public static void createRequest(Id bookId ,String email, Date dateFrom, Date dateTo) {
+    public static void createRequest(Id bookId, String email, Date dateFrom, Date dateTo) {
         Book_Request__c req = new Book_Request__c(
             BookTest__c = bookId,
-            Status__c = 'Pending',
-            Requested_By__c = email ,
+            Status__c = 'PENDING',
+            Requested_By__c = email,
             Date_From__c = dateFrom,
             Date_To__c = dateTo
         );
         insert req;
     }
-
-    @AuraEnabled(cacheable=true)
-public static List<Book_Request__c> getRequestsByEmail(String email) {
-    return [
-        SELECT Id, Name, BookTest__r.Name, Date_From__c, Date_To__c, Status__c
-        FROM Book_Request__c
-        WHERE Requested_By__c = :email
-    ];
+    
+    // Get all book requests by email - shows complete history (remove cacheable for debugging)
+    @AuraEnabled
+    public static List<Book_Request__c> getRequestsByEmail(String email) {
+        System.debug('Searching for requests with email: ' + email);
+        List<Book_Request__c> requests = [
+            SELECT Id, Name, BookTest__r.Name, BookTest__r.Author__c, BookTest__r.Category__c, 
+                   Date_From__c, Date_To__c, Status__c, CreatedDate, Requested_By__c
+            FROM Book_Request__c
+            WHERE Requested_By__c = :email
+            ORDER BY CreatedDate DESC
+        ];
+        System.debug('Found ' + requests.size() + ' requests');
+        for(Book_Request__c req : requests) {
+            System.debug('Request: ' + req.BookTest__r.Name + ' - Status: ' + req.Status__c);
+        }
+        return requests;
+    }
+    
+    // Method to return book - changes status to 'Returned' and makes book available
+    @AuraEnabled
+    public static String returnBook(String email, Id bookRequestId) {
+        try {
+            // Get the book request details - must be APPROVED and belong to the user
+            Book_Request__c request = [
+                SELECT Id, BookTest__c, Status__c, Requested_By__c
+                FROM Book_Request__c
+                WHERE Id = :bookRequestId AND Requested_By__c = :email AND Status__c = 'APPROVED'
+                LIMIT 1
+            ];
+            
+            // Find the book copy that was assigned to this user
+            List<BookInfoTest__c> bookCopies = [
+                SELECT Id, Is_Available__c, Owned_By__c
+                FROM BookInfoTest__c
+                WHERE BookTest__c = :request.BookTest__c 
+                AND Owned_By__c = :email 
+                AND Is_Available__c = false
+                LIMIT 1
+            ];
+            
+            if (bookCopies.isEmpty()) {
+                throw new AuraHandledException('No book copy found to return for this request.');
+            }
+            
+            BookInfoTest__c bookCopy = bookCopies[0];
+            
+            // Update book copy to make it available again
+            bookCopy.Is_Available__c = true;
+            bookCopy.Owned_By__c = null;
+            update bookCopy;
+            
+            // Update request status to 'Returned'
+            request.Status__c = 'RETURNED';
+            update request;
+            
+            return 'Book returned successfully!';
+            
+        } catch (QueryException e) {
+            throw new AuraHandledException('Book request not found or not eligible for return.');
+        } catch (Exception e) {
+            throw new AuraHandledException('Error returning book: ' + e.getMessage());
+        }
+    }
 }
-
-}
-
-
