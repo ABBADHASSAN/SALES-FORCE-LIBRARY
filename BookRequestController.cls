@@ -3,7 +3,9 @@ public with sharing class BookRequestController {
     @AuraEnabled(cacheable=true)
     public static List<Book_Request__c> getPendingRequests() {
         return [
-            SELECT Id, Status__c, BookTest__c, BookTest__r.Name,BookTest__r.Author__c, BookTest__r.Category__c,Date_From__c, Date_To__c,Requested_By__c,
+            SELECT Id, Status__c, BookTest__c, BookTest__r.Name,
+                   BookTest__r.Author__c, BookTest__r.Category__c,
+                   Date_From__c, Date_To__c, Requested_By__c,
                    CreatedDate
             FROM Book_Request__c
             WHERE Status__c = 'Pending'
@@ -11,7 +13,6 @@ public with sharing class BookRequestController {
         ];
     }
 
-    // Updated to include Owned_By__c field
     @AuraEnabled(cacheable=true)
     public static List<BookInfoTest__c> getAvailableCopies(Id bookId) {
         return [
@@ -24,7 +25,8 @@ public with sharing class BookRequestController {
     @AuraEnabled
     public static void approveBookRequest(Id requestId, Id bookCopyId) {
         Book_Request__c request = [
-            SELECT Id, Status__c, Requested_By__c
+            SELECT Id, Status__c, Requested_By__c, BookTest__c, 
+                   BookTest__r.Name, Date_To__c,Name
             FROM Book_Request__c
             WHERE Id = :requestId
             LIMIT 1
@@ -41,6 +43,9 @@ public with sharing class BookRequestController {
         copy.Owned_By__c = request.Requested_By__c;
 
         update new List<SObject>{ request, copy };
+
+        // Call method to add issued book record
+        addIssuedBooks(request);
     }
 
     @AuraEnabled
@@ -53,5 +58,18 @@ public with sharing class BookRequestController {
         ];
         request.Status__c = 'Rejected';
         update request;
+    }
+
+    // Creates a record in Issued_book_Test__c when a book is approved
+    private static void addIssuedBooks(Book_Request__c request) {
+        try {
+            Issued_book_Test__c issued = new Issued_book_Test__c();
+            issued.Name = request.BookTest__r.Name; // Name of the book
+            issued.Due_Date__c = request.Date_To__c; // due date
+            issued.Book_Request_Test__c = request.Name; // copy of that book 
+            insert issued;
+        } catch (Exception e) {
+            throw new AuraHandledException('Error adding issued book: ' + e.getMessage());
+        }
     }
 }
