@@ -71,6 +71,18 @@ public with sharing class BookFormController {
             // Update request status to 'Returned'
             request.Status__c = 'RETURNED';
             update request;
+
+
+            Issued_Book_Test__c issuedBook = [
+                SELECT ID ,Status__c ,Borrower_Email__c,Book_Request_Test__c
+                FROM Issued_Book_Test__c
+                WHERE Borrower_Email__c = :email
+                AND Book_Request_Test__c = :bookRequestId
+                LIMIT 1
+            ] ;
+            
+            issuedBook.Status__c = 'RETURNED';
+            update issuedBook;
             
             return 'Book returned successfully!';
             
