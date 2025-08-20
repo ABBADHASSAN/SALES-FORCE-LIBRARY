@@ -8,33 +8,95 @@
                 type="email"
                 label="Enter your email"
                 value={email}
-                onchange={handleEmailChange}>
+                onchange={handleEmailChange}
+                required>
             </lightning-input>
 
             <lightning-button
                 label="Check My Books"
                 onclick={handleCheckBooks}
                 class="slds-m-top_medium"
-                variant="brand">
+                variant="brand"
+                disabled={loading}>
             </lightning-button>
 
-            <template if:true={requests}>
-                <template if:true={requests.length}>
+            <!-- Loading spinner -->
+            <template if:true={loading}>
+                <div class="slds-p-around_medium slds-text-align_center">
+                    <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                    <p class="slds-m-top_small">Loading your book requests...</p>
+                </div>
+            </template>
+
+            <!-- Book Requests List -->
+            <template if:false={loading}>
+                <template if:true={hasRequests}>
                     <div class="slds-m-top_medium">
-                        <template for:each={requests} for:item="req">
-                            <div key={req.Id} class="slds-box slds-m-bottom_small">
-                                <p><strong>Book:</strong> {req.BookTest__r.Name}</p>
-                                <p><strong>Status:</strong> {req.Status__c}</p>
-                                <p><strong>Date From:</strong> {req.Date_From__c}</p>
-                                <p><strong>Date To:</strong> {req.Date_To__c}</p>
-                            </div>
-                        </template>
+                        <h3 class="slds-text-heading_small slds-m-bottom_small">Your Book Request History:</h3>
+                        <!-- Replace the book request display section in your template with this: -->
+                            <template for:each={requests} for:item="req">
+                                <div key={req.Id} class="slds-box slds-m-bottom_small">
+                                    <div class="slds-grid slds-grid_align-spread">
+                                        <!-- Book Details -->
+                                        <div class="slds-col slds-size_3-of-4">
+                                            <div class="slds-grid slds-wrap">
+                                                <div class="slds-col slds-size_1-of-2 slds-p-right_small">
+                                                    <p><strong>Book:</strong> {req.BookTest__r.Name}</p>
+                                                    <p><strong>Author:</strong> {req.BookTest__r.Author__c}</p>
+                                                    <p><strong>Category:</strong> {req.BookTest__r.Category__c}</p>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <p><strong>Status:</strong> 
+                                                        <lightning-badge 
+                                                            label={req.Status__c}
+                                                            variant={req.statusVariant}>
+                                                        </lightning-badge>
+                                                    </p>
+                                                    <p><strong>From:</strong> {req.Date_From__c}</p>
+                                                    <p><strong>To:</strong> {req.Date_To__c}</p>
+                                                    <p><strong>Requested:</strong> {req.formattedDate}</p>
+                                                    <p><strong>Fine:</strong> {req.Fine__c}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Return Button -->
+                                        <div class="slds-col slds-size_1-of-4 slds-text-align_right">
+                                            <template if:true={req.canReturn}>
+                                                <lightning-button
+                                                    label="Return Book"
+                                                    variant="destructive"
+                                                    onclick={handleReturnBook}
+                                                    data-id={req.Id}
+                                                    disabled={loading}
+                                                    class="slds-m-left_small">
+                                                </lightning-button>
+                                            </template>
+                                            <template if:false={req.canReturn}>
+                                                <div class="slds-text-color_weak slds-text-body_small">
+                                                    {req.Status__c}
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
                     </div>
                 </template>
-                <template if:false={requests.length}>
-                    <p class="slds-m-top_medium">No books found for this email.</p>
+                
+                <!-- No requests found message -->
+                <template if:true={noRequests}>
+                    <div class="slds-m-top_medium slds-text-align_center">
+                        <lightning-icon icon-name="utility:info" size="small" class="slds-m-right_x-small"></lightning-icon>
+                        <p>No book requests found for this email address.</p>
+                        <p class="slds-text-color_weak slds-m-top_small">Make sure you entered the correct email address.</p>
+                    </div>
                 </template>
             </template>
         </div>
     </lightning-card>
 </template>
+        </div>
+    </lightning-card>
+</template>
+
