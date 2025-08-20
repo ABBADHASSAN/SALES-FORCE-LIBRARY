@@ -18,22 +18,33 @@ public with sharing class BookFormController {
     }
     
     // Get all book requests by email - shows complete history (remove cacheable for debugging)
-    @AuraEnabled
-    public static List<Book_Request__c> getRequestsByEmail(String email) {
-        System.debug('Searching for requests with email: ' + email);
-        List<Book_Request__c> requests = [
-            SELECT Id, Name, BookTest__r.Name, BookTest__r.Author__c, BookTest__r.Category__c, 
-                   Date_From__c, Date_To__c, Status__c, CreatedDate, Requested_By__c
-            FROM Book_Request__c
-            WHERE Requested_By__c = :email
-            ORDER BY CreatedDate DESC
-        ];
-        System.debug('Found ' + requests.size() + ' requests');
-        for(Book_Request__c req : requests) {
-            System.debug('Request: ' + req.BookTest__r.Name + ' - Status: ' + req.Status__c);
-        }
-        return requests;
+    // Updated method in your BookFormController class
+// Updated method in your BookFormController class
+@AuraEnabled
+public static List<Issued_book_Test__c> getRequestsByEmail(String email) {
+    System.debug('Searching for requests with email: ' + email);
+    
+    List<Issued_book_Test__c> requests = [
+        SELECT Id, Name, Due_Date__c, Status__c, Fine__c, Borrower_Email__c, 
+               CreatedDate,
+               Book_Request_Test__r.Date_From__c,
+               Book_Request_Test__r.Date_To__c,
+               Book_Request_Test__r.BookTest__r.Name,
+               Book_Request_Test__r.BookTest__r.Author__c,
+               Book_Request_Test__r.BookTest__r.Category__c
+        FROM Issued_book_Test__c
+        WHERE Borrower_Email__c = :email
+        ORDER BY CreatedDate DESC
+    ];
+    
+    System.debug('Found ' + requests.size() + ' requests');
+    for(Issued_book_Test__c req : requests) {
+        System.debug('Request: ' + req.Name + ' - Status: ' + req.Status__c + ' Date: ' + req.Due_Date__c + ' Fine: ' + req.Fine__c);
     }
+    return requests;
+}
+
+    
     
     // Method to return book - changes status to 'Returned' and makes book available
     @AuraEnabled
