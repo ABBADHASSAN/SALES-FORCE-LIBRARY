@@ -1,0 +1,14 @@
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>60.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+        <target>lightning__RecordPage</target>
+        <target>lightning__Tab</target>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+    </targets>
+    <masterLabel>Book User Login</masterLabel>
+    <description>A login/registration component that saves user information to Book_User_Test__c object</description>
+</LightningComponentBundle>

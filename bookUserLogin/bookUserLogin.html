@@ -1,0 +1,75 @@
+<template>
+    <lightning-card title="User Registration" icon-name="standard:user">
+        <div class="slds-p-around_medium">
+            <!-- Name Input -->
+            <lightning-input
+                label="Full Name"
+                name="name"
+                type="text"
+                value={name}
+                onchange={handleNameChange}
+                required
+                message-when-value-missing="Please enter your full name"
+                class="slds-m-bottom_small">
+            </lightning-input>
+
+            <!-- Email Input -->
+            <lightning-input
+                label="Email Address"
+                name="email"
+                type="email"
+                value={email}
+                onchange={handleEmailChange}
+                required
+                message-when-value-missing="Please enter your email address"
+                message-when-type-mismatch="Please enter a valid email address"
+                class="slds-m-bottom_small">
+            </lightning-input>
+
+            <!-- Phone Input -->
+            <lightning-input
+                label="Phone Number"
+                name="phone"
+                type="tel"
+                value={phone}
+                onchange={handlePhoneChange}
+                required
+                message-when-value-missing="Please enter your phone number"
+                class="slds-m-bottom_medium">
+            </lightning-input>
+
+            <lightning-input
+                label="Password"
+                name="password"
+                type="password"
+                value={password}
+                onchange={handlePasswordChange}
+                required
+                message-when-value-missing="Please enter your password (at least 8 characters)"
+                class="slds-m-bottom_medium">
+            </lightning-input>
+            <!-- Submit Button -->
+            <div class="slds-text-align_center">
+                <lightning-button
+                    variant="brand"
+                    label="Register"
+                    onclick={handleSubmit}
+                    disabled={isLoading}
+                    class="slds-m-right_small">
+                </lightning-button>
+                <lightning-button
+                    label="Already Registered? Login"
+                    onclick={handleLogin}
+                    class="slds-m-top_medium">
+                </lightning-button>
+                
+                <lightning-spinner 
+                    if:true={isLoading}
+                    alternative-text="Loading"
+                    size="medium"
+                    class="slds-m-left_small">
+                </lightning-spinner>
+            </div>
+        </div>
+    </lightning-card>
+</template>

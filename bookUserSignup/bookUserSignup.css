@@ -1,0 +1,13 @@
+.slds-notify_alert {
+    border-radius: 0.25rem;
+}
+
+.slds-alert_error {
+    background-color: #ba0517;
+    color: #ffffff;
+}
+
+.slds-alert_error h2 {
+    color: #ffffff;
+    font-weight: 400;
+}

@@ -1,0 +1,64 @@
+<!-- bookUserSignup.html -->
+<template>
+    <lightning-card title="User Sign In" icon-name="standard:user">
+        <div class="slds-p-around_medium">
+            <!-- Email Input -->
+            <lightning-input
+                label="Email Address"
+                name="email"
+                type="email"
+                value={email}
+                onchange={handleEmailChange}
+                required
+                message-when-value-missing="Please enter your email address"
+                message-when-type-mismatch="Please enter a valid email address"
+                class="slds-m-bottom_small">
+            </lightning-input>
+
+            <!-- Password Input -->
+            <lightning-input
+                label="Password"
+                name="password"
+                type="password"
+                value={password}
+                onchange={handlePasswordChange}
+                required
+                message-when-value-missing="Please enter your password"
+                class="slds-m-bottom_medium">
+            </lightning-input>
+
+            <!-- Error Message Display -->
+            <div if:true={errorMessage} class="slds-m-bottom_medium">
+                <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                    <span class="slds-assistive-text">Error</span>
+                    <h2>{errorMessage}</h2>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="slds-text-align_center">
+                <lightning-button
+                    variant="brand"
+                    label="Sign In"
+                    onclick={handleSignIn}
+                    disabled={isLoading}
+                    class="slds-m-right_small">
+                </lightning-button>
+                
+                <lightning-button
+                    label="New User? Register Here"
+                    onclick={handleRegister}
+                    class="slds-m-top_medium">
+                </lightning-button>
+                
+                <lightning-spinner 
+                    if:true={isLoading}
+                    alternative-text="Signing in..."
+                    size="medium"
+                    class="slds-m-left_small">
+                </lightning-spinner>
+            </div>
+        </div>
+    </lightning-card>
+</template>
+
