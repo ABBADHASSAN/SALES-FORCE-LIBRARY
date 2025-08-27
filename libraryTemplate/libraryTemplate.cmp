@@ -1,0 +1,35 @@
+<aura:component controller="LogoController"  implements="forceCommunity:themeLayout" access="global"
+    description="Parent center theme for community users">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="profileMenu" type="Aura.Component[]" required="false" />
+    <aura:attribute name="navBar" type="Aura.Component[]" required="false" />
+    <aura:attribute name="isGuest" type="boolean" default="true" />
+    <aura:attribute name="logoUrl" type="String" />
+    <title>Bizcover</title>
+
+    <lightning:layout multipleRows="true" class="pc-template_contentRegion pc-template-public">
+        <lightning:layoutItem size="12" class="pc-template-header">
+            <lightning:layout class="pc-template-header-region">
+
+                <lightning:layoutItem size="9" smallDeviceSize="9" mediumDeviceSize="10" largeDeviceSize="11"
+                    alignmentBump="left" class="pp-logo-container pp-icon-vertical-align slds-p-left_xx-small">
+                    <!-- <img src= "{!$Resource.ZiaTraders + '/logos/logo2.png'}" alt="ZiaTraders" style="width:50%;height:60%;" /> -->
+                    <img src="{!v.logoUrl}" alt="ZiaTraders" style="width:100%;height:100%;" />
+                </lightning:layoutItem>
+            </lightning:layout>
+        </lightning:layoutItem>
+    </lightning:layout>
+
+    <div class="navigation">
+        <!-- Navigation Menu component -->
+        {!v.navBar}
+    </div>
+   
+    <div class="slds-grid slds-wrap pc-template">
+        <lightning:layoutItem size="12" class="pc-template_content">
+            {!v.body}
+        </lightning:layoutItem>
+
+    </div>
+
+</aura:component>
