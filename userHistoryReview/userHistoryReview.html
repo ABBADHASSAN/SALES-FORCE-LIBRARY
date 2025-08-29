@@ -1,0 +1,76 @@
+<template>
+    <lightning-card>
+        <div class="custom-card-header">
+            Check Your Books
+        </div>
+        <div class="slds-p-around_medium">
+            
+
+            <lightning-button
+                label="Check My Books"
+                onclick={handleCheckBooks}
+                class="slds-m-top_medium"
+                variant="brand"
+                disabled={loading}>
+            </lightning-button>
+
+            <!-- Loading spinner -->
+            <template if:true={loading}>
+                <div class="slds-p-around_medium slds-text-align_center">
+                    <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                    <p class="slds-m-top_small">Loading your book requests...</p>
+                </div>
+            </template>
+
+            <!-- Book Requests List -->
+            <template if:false={loading}>
+                <template if:true={hasRequests}>
+                    <div class="slds-m-top_medium">
+                        <h3 class="slds-text-heading_small slds-m-bottom_small">Your Book Request History:</h3>
+                        <!-- Replace the book request display section in your template with this: -->
+                            <template for:each={requests} for:item="req">
+                                <div key={req.Id} class="slds-box slds-m-bottom_small">
+                                    <div class="slds-grid slds-grid_align-spread">
+                                        <!-- Book Details -->
+                                        <div class="slds-col slds-size_3-of-4">
+                                            <div class="slds-grid slds-wrap">
+                                                <div class="slds-col slds-size_1-of-2 slds-p-right_small">
+                                                    <p><strong>Book:</strong> {req.BookTest__r.Name}</p>
+                                                    <p><strong>Author:</strong> {req.BookTest__r.Author__c}</p>
+                                                    <p><strong>Category:</strong> {req.BookTest__r.Category__c}</p>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <p><strong>Status:</strong> 
+                                                        <lightning-badge 
+                                                            label={req.Status__c}
+                                                            variant={req.statusVariant}>
+                                                        </lightning-badge>
+                                                    </p>
+                                                    <p><strong>From:</strong> {req.Date_From__c}</p>
+                                                    <p><strong>To:</strong> {req.Date_To__c}</p>
+                                                    <p><strong>Requested:</strong> {req.formattedDate}</p>
+                                                    <p><strong>Fine:</strong> {req.Fine__c}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        
+                                        
+                                    </div>
+                                </div>
+                            </template>
+                    </div>
+                </template>
+                
+                <!-- No requests found message -->
+                <template if:true={noRequests}>
+                    <div class="slds-m-top_medium slds-text-align_center">
+                        <lightning-icon icon-name="utility:info" size="small" class="slds-m-right_x-small"></lightning-icon>
+                        <p>No book requests found for this email address.</p>
+                        <p class="slds-text-color_weak slds-m-top_small">Make sure you entered the correct email address.</p>
+                    </div>
+                </template>
+            </template>
+        </div>
+    </lightning-card>
+</template>
